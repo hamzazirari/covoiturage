@@ -1,4 +1,8 @@
 package com.croise.covoiturage.enums;
 
-public class StatutTrajet {
+public enum StatutTrajet {
+    PUBLIE,
+    COMPLET,
+    TERMINE,
+    ANNULE
 }
