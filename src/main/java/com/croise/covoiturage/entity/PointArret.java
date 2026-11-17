@@ -31,7 +31,7 @@ public class PointArret {
     @Column(name = "prix_depuis_depart", nullable = false, precision = 10, scale = 2)
     private BigDecimal prixDepuisDepart;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trajet_id", nullable = false)
     private Trajet trajet;
 }

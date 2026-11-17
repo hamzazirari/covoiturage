@@ -33,19 +33,19 @@ public class Reservation {
     @Column(nullable = false)
     private StatutReservation statut;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "passager_id", nullable = false)
     private Passager passager;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trajet_id", nullable = false)
     private Trajet trajet;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "point_montee_id", nullable = false)
     private PointArret pointMontee;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "point_descente_id", nullable = false)
     private PointArret pointDescente;
 }

@@ -34,7 +34,7 @@ public class Vehicule {
     @Column(nullable = false)
     private int capacite;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conducteur_id", nullable = false)
     private Conducteur conducteur;
 
