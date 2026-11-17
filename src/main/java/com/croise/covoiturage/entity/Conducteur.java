@@ -1,16 +1,20 @@
 package com.croise.covoiturage.entity;
 
+import com.croise.covoiturage.entity.Trajet;
+import com.croise.covoiturage.entity.Vehicule;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "conducteurs")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Conducteur {
