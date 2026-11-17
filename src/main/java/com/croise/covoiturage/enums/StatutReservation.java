@@ -1,4 +1,6 @@
 package com.croise.covoiturage.enums;
 
-public class StatutReservation {
+public enum StatutReservation {
+    CONFIRMEE,
+    ANNULEE
 }
