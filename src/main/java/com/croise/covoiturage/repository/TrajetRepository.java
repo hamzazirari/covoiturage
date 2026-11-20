@@ -9,5 +9,15 @@ import java.util.Optional;
 
 public interface TrajetRepository extends JpaRepository<Trajet, Long> {
 
+    // Charge le trajet + conducteur + véhicule + points d'arrêt en UNE SEULE requête SQL (pas de N+1)
+    @Query("""
+            SELECT DISTINCT t FROM Trajet t
+            JOIN FETCH t.conducteur
+            JOIN FETCH t.vehicule
+            JOIN FETCH t.pointsArret
+            WHERE t.id = :id
+            """)
+    Optional<Trajet> findDetailById(@Param("id") Long id);
+
 
 }
