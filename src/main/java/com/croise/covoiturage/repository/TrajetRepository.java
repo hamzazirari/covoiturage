@@ -23,7 +23,7 @@ public interface TrajetRepository extends JpaRepository<Trajet, Long> {
     @Query("""
             SELECT COALESCE(SUM(r.nombrePlaces), 0) FROM Reservation r
             WHERE r.trajet.id = :trajetId
-            AND r.statut = com.youcode.covoiturage.enums.StatutReservation.CONFIRMEE
+            AND r.statut = com.croise.covoiturage.enums.StatutReservation.CONFIRMEE
             """)
     int compterPlacesReservees(@Param("trajetId") Long trajetId);
 }
