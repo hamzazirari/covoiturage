@@ -145,7 +145,7 @@ public class TrajetServiceImpl implements TrajetService {
         return construireReponseAvecPlacesRestantes(trajet);
     }
 
-    // construit le DTO et y ajoute les places restantes calculees
+    // construit le DTO et  ajoute les places restantes calculees
     private TrajetResponseDTO construireReponseAvecPlacesRestantes(Trajet trajet) {
         TrajetResponseDTO dtoSansPlaces = trajetMapper.toResponseDTO(trajet);
 
