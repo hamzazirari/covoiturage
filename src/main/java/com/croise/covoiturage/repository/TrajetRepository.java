@@ -1,15 +1,19 @@
 package com.croise.covoiturage.repository;
 
+import com.croise.covoiturage.dto.TrajetRechercheResponseDTO;
 import com.croise.covoiturage.entity.Trajet;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface TrajetRepository extends JpaRepository<Trajet, Long> {
 
-    // Charge le trajet + conducteur + véhicule + points d'arrêt en UNE SEULE requête SQL (pas de N+1)
     @Query("""
             SELECT DISTINCT t FROM Trajet t
             JOIN FETCH t.conducteur
@@ -19,11 +23,48 @@ public interface TrajetRepository extends JpaRepository<Trajet, Long> {
             """)
     Optional<Trajet> findDetailById(@Param("id") Long id);
 
-    // Nombre total de places réservées (statut CONFIRMEE) sur ce trajet
     @Query("""
             SELECT COALESCE(SUM(r.nombrePlaces), 0) FROM Reservation r
             WHERE r.trajet.id = :trajetId
             AND r.statut = com.croise.covoiturage.enums.StatutReservation.CONFIRMEE
             """)
     int compterPlacesReservees(@Param("trajetId") Long trajetId);
+
+    @Query(value = """
+            SELECT new com.croise.covoiturage.dto.TrajetRechercheResponseDTO(
+                t.id,
+                pDepart.ville,
+                pArrivee.ville,
+                t.dateDepart,
+                (pArrivee.prixDepuisDepart - pDepart.prixDepuisDepart),
+                (t.placesProposees - COALESCE(
+                    (SELECT SUM(r.nombrePlaces) FROM Reservation r
+                     WHERE r.trajet = t
+                     AND r.statut = com.croise.covoiturage.enums.StatutReservation.CONFIRMEE), 0)),
+                t.statut
+            )
+            FROM Trajet t
+            JOIN t.pointsArret pDepart
+            JOIN t.pointsArret pArrivee
+            WHERE LOWER(pDepart.ville) = LOWER(:villeDepart)
+            AND LOWER(pArrivee.ville) = LOWER(:villeArrivee)
+            AND pDepart.ordre < pArrivee.ordre
+            AND t.statut = com.croise.covoiturage.enums.StatutTrajet.PUBLIE
+            AND (:date IS NULL OR FUNCTION('DATE', t.dateDepart) = :date)
+            AND (t.placesProposees - COALESCE(
+                    (SELECT SUM(r.nombrePlaces) FROM Reservation r
+                     WHERE r.trajet = t
+                     AND r.statut = com.croise.covoiturage.enums.StatutReservation.CONFIRMEE), 0)
+                ) >= :placesDemandees
+            AND (:prixMax IS NULL OR (pArrivee.prixDepuisDepart - pDepart.prixDepuisDepart) <= :prixMax)
+            ORDER BY t.dateDepart ASC
+            """)
+    Page<TrajetRechercheResponseDTO> rechercher(
+            @Param("villeDepart") String villeDepart,
+            @Param("villeArrivee") String villeArrivee,
+            @Param("date") LocalDate date,
+            @Param("placesDemandees") int placesDemandees,
+            @Param("prixMax") BigDecimal prixMax,
+            Pageable pageable
+    );
 }

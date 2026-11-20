@@ -10,8 +10,7 @@ public record TrajetRechercheResponseDTO(
         String villeDepart,
         String villeArrivee,
         LocalDateTime dateDepart,
-        int placesRestantes,
         BigDecimal prixSegment,
-        StatutTrajet statut,
-        String nomConducteur
+        int placesRestantes,
+        StatutTrajet statut
 ) {}
