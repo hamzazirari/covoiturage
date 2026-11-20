@@ -1,6 +1,7 @@
 package com.croise.covoiturage.service.impl;
 
 import com.croise.covoiturage.dto.PointArretRequestDTO;
+import com.croise.covoiturage.dto.TrajetRechercheResponseDTO;
 import com.croise.covoiturage.dto.TrajetRequestDTO;
 import com.croise.covoiturage.dto.TrajetResponseDTO;
 import com.croise.covoiturage.entity.Conducteur;
@@ -20,9 +21,17 @@ import com.croise.covoiturage.service.TrajetService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import com.croise.covoiturage.dto.TrajetRechercheResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -143,6 +152,22 @@ public class TrajetServiceImpl implements TrajetService {
         Trajet trajet = trajetRepository.findDetailById(id)
                 .orElseThrow(() -> new RessourceNotFoundException("Trajet introuvable avec l'id : " + id));
         return construireReponseAvecPlacesRestantes(trajet);
+    }
+
+    @Override
+    public Page<TrajetRechercheResponseDTO> rechercher(
+            String villeDepart,
+            String villeArrivee,
+            LocalDate date,
+            int placesDemandees,
+            BigDecimal prixMax,
+            int page,
+            int taille) {
+
+        Pageable pageable = PageRequest.of(page, taille);
+
+        return trajetRepository.rechercher(
+                villeDepart, villeArrivee, date, placesDemandees, prixMax, pageable);
     }
 
     // construit le DTO et  ajoute les places restantes calculees
