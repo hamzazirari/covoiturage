@@ -19,5 +19,11 @@ public interface TrajetRepository extends JpaRepository<Trajet, Long> {
             """)
     Optional<Trajet> findDetailById(@Param("id") Long id);
 
-
+    // Nombre total de places réservées (statut CONFIRMEE) sur ce trajet
+    @Query("""
+            SELECT COALESCE(SUM(r.nombrePlaces), 0) FROM Reservation r
+            WHERE r.trajet.id = :trajetId
+            AND r.statut = com.youcode.covoiturage.enums.StatutReservation.CONFIRMEE
+            """)
+    int compterPlacesReservees(@Param("trajetId") Long trajetId);
 }
