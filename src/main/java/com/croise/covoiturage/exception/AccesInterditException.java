@@ -1,4 +1,7 @@
 package com.croise.covoiturage.exception;
 
-public class AccesInterditException {
+public class AccesInterditException extends RuntimeException {
+    public AccesInterditException(String message) {
+        super(message);
+    }
 }
