@@ -9,6 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.croise.covoiturage.dto.TrajetRechercheResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/trajets")
 @RequiredArgsConstructor
@@ -25,5 +32,21 @@ public class TrajetController {
     @GetMapping("/{id}")
     public ResponseEntity<TrajetResponseDTO> consulterDetail(@PathVariable Long id) {
         return ResponseEntity.ok(trajetService.consulterDetail(id));
+    }
+
+    @GetMapping("/recherche")
+    public ResponseEntity<Page<TrajetRechercheResponseDTO>> rechercher(
+            @RequestParam String villeDepart,
+            @RequestParam String villeArrivee,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(defaultValue = "1") int placesDemandees,
+            @RequestParam(required = false) BigDecimal prixMax,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int taille) {
+
+        Page<TrajetRechercheResponseDTO> resultats = trajetService.rechercher(
+                villeDepart, villeArrivee, date, placesDemandees, prixMax, page, taille);
+
+        return ResponseEntity.ok(resultats);
     }
 }
