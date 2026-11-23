@@ -23,4 +23,8 @@ public interface TrajetService {
             int page,
             int taille
     );
+
+    void terminer(Long trajetId, Long conducteurId);
+
+    void annulerTrajet(Long trajetId, Long conducteurId);
 }
