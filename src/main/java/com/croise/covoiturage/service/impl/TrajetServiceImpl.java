@@ -15,6 +15,7 @@ import com.croise.covoiturage.exception.RessourceNotFoundException;
 import com.croise.covoiturage.mapper.PointArretMapper;
 import com.croise.covoiturage.mapper.TrajetMapper;
 import com.croise.covoiturage.repository.ConducteurRepository;
+import com.croise.covoiturage.repository.ReservationRepository;
 import com.croise.covoiturage.repository.TrajetRepository;
 import com.croise.covoiturage.repository.VehiculeRepository;
 import com.croise.covoiturage.service.TrajetService;
@@ -23,6 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import com.croise.covoiturage.entity.Reservation;
+import com.croise.covoiturage.enums.StatutReservation;
+import com.croise.covoiturage.repository.ReservationRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.croise.covoiturage.dto.TrajetRechercheResponseDTO;
 import org.springframework.data.domain.Page;
@@ -45,6 +50,7 @@ public class TrajetServiceImpl implements TrajetService {
     private static final Logger log = LoggerFactory.getLogger(TrajetServiceImpl.class);
 
     private final TrajetRepository trajetRepository;
+    private final ReservationRepository reservationRepository;
     private final ConducteurRepository conducteurRepository;
     private final VehiculeRepository vehiculeRepository;
     private final TrajetMapper trajetMapper;
@@ -168,6 +174,72 @@ public class TrajetServiceImpl implements TrajetService {
 
         return trajetRepository.rechercher(
                 villeDepart, villeArrivee, date, placesDemandees, prixMax, pageable);
+    }
+    @Override
+    @Transactional
+    public void terminer(Long trajetId, Long conducteurId) {
+
+        Trajet trajet = trajetRepository.findById(trajetId)
+                .orElseThrow(() -> new RessourceNotFoundException("Trajet introuvable avec l'id : " + trajetId));
+
+        // --- Règle : seul le conducteur propriétaire peut terminer SON trajet (403) ---
+        if (!trajet.getConducteur().getId().equals(conducteurId)) {
+            log.warn("Le conducteur {} a tenté de terminer le trajet {} qui ne lui appartient pas",
+                    conducteurId, trajetId);
+            throw new AccesInterditException("Ce trajet ne vous appartient pas");
+        }
+
+        // --- Règle : statuts finaux, aucune modification possible (409) ---
+        if (trajet.getStatut() == StatutTrajet.TERMINE || trajet.getStatut() == StatutTrajet.ANNULE) {
+            throw new RegleMetierException("Ce trajet est déjà dans un statut final (" + trajet.getStatut() + ")");
+        }
+
+        // --- Règle : uniquement après l'heure de départ (409) ---
+        if (LocalDateTime.now().isBefore(trajet.getDateDepart())) {
+            log.warn("Tentative de terminer le trajet {} avant son heure de départ", trajetId);
+            throw new RegleMetierException("Impossible de terminer ce trajet avant son heure de départ");
+        }
+
+        trajet.setStatut(StatutTrajet.TERMINE);
+        trajetRepository.save(trajet);
+
+        log.info("Trajet {} marqué comme TERMINE par le conducteur {}", trajetId, conducteurId);
+    }
+
+    @Override
+    @Transactional
+    public void annulerTrajet(Long trajetId, Long conducteurId) {
+
+        Trajet trajet = trajetRepository.findById(trajetId)
+                .orElseThrow(() -> new RessourceNotFoundException("Trajet introuvable avec l'id : " + trajetId));
+
+        // --- Règle : seul le conducteur propriétaire peut annuler SON trajet (403) ---
+        if (!trajet.getConducteur().getId().equals(conducteurId)) {
+            log.warn("Le conducteur {} a tenté d'annuler le trajet {} qui ne lui appartient pas",
+                    conducteurId, trajetId);
+            throw new AccesInterditException("Ce trajet ne vous appartient pas");
+        }
+
+        // --- Règle : statuts finaux, aucune modification possible (409) ---
+        if (trajet.getStatut() == StatutTrajet.TERMINE || trajet.getStatut() == StatutTrajet.ANNULE) {
+            throw new RegleMetierException("Ce trajet est déjà dans un statut final (" + trajet.getStatut() + ")");
+        }
+
+        // --- Annulation en cascade de toutes les réservations CONFIRMEE ---
+        List<Reservation> reservations = reservationRepository.findByTrajetId(trajetId);
+
+        for (Reservation reservation : reservations) {
+            if (reservation.getStatut() == StatutReservation.CONFIRMEE) {
+                reservation.setStatut(StatutReservation.ANNULEE);
+                reservationRepository.save(reservation);
+            }
+        }
+
+        trajet.setStatut(StatutTrajet.ANNULE);
+        trajetRepository.save(trajet);
+
+        log.info("Trajet {} annulé par le conducteur {}, {} réservation(s) annulée(s) avec lui",
+                trajetId, conducteurId, reservations.size());
     }
 
     // construit le DTO et  ajoute les places restantes calculees
