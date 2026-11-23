@@ -88,7 +88,7 @@ Exemple sur un trajet Rabat(0 DH) → Casablanca(40 DH) → Settat(70 DH) → Ma
 ### 1. Cloner le projet
 
 ```bash
-git clone <URL_DU_DEPOT>
+git clone <(https://github.com/hamzazirari/covoiturage)>
 cd covoiturage
 ```
 
