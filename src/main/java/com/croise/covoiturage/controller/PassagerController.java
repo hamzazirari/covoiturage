@@ -2,7 +2,9 @@ package com.croise.covoiturage.controller;
 
 import com.croise.covoiturage.dto.PassagerRequestDTO;
 import com.croise.covoiturage.dto.PassagerResponseDTO;
+import com.croise.covoiturage.dto.ReservationResponseDTO;
 import com.croise.covoiturage.service.PassagerService;
+import com.croise.covoiturage.service.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,5 +48,10 @@ public class PassagerController {
         return ResponseEntity.ok(passagerService.rechercherParEmail(email));
     }
 
+    private final ReservationService reservationService;
 
+    @GetMapping("/{id}/reservations")
+    public ResponseEntity<List<ReservationResponseDTO>> consulterHistoriqueReservations(@PathVariable Long id) {
+        return ResponseEntity.ok(reservationService.consulterParPassager(id));
+    }
 }
