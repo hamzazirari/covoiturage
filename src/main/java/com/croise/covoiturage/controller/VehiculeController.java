@@ -3,6 +3,7 @@ package com.croise.covoiturage.controller;
 import com.croise.covoiturage.dto.VehiculeRequestDTO;
 import com.croise.covoiturage.dto.VehiculeResponseDTO;
 import com.croise.covoiturage.service.VehiculeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vehicules")
 @RequiredArgsConstructor
+@Tag(name = "Véhicules", description = "Gestion des véhicules des conducteurs")
+
 public class VehiculeController {
 
     private final VehiculeService vehiculeService;

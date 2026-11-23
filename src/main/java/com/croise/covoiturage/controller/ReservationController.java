@@ -3,6 +3,7 @@ package com.croise.covoiturage.controller;
 import com.croise.covoiturage.dto.ReservationRequestDTO;
 import com.croise.covoiturage.dto.ReservationResponseDTO;
 import com.croise.covoiturage.service.ReservationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reservations")
 @RequiredArgsConstructor
+@Tag(name = "Réservations", description = "Réservation et annulation de places sur un trajet")
 public class ReservationController {
 
     private final ReservationService reservationService;

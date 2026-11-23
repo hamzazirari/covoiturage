@@ -3,6 +3,7 @@ package com.croise.covoiturage.controller;
 import com.croise.covoiturage.dto.TrajetRequestDTO;
 import com.croise.covoiturage.dto.TrajetResponseDTO;
 import com.croise.covoiturage.service.TrajetService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/api/trajets")
 @RequiredArgsConstructor
+@Tag(name = "Trajets", description = "Publication, recherche et cycle de vie des trajets")
+
 public class TrajetController {
 
     private final TrajetService trajetService;

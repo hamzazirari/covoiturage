@@ -5,6 +5,7 @@ import com.croise.covoiturage.dto.PassagerResponseDTO;
 import com.croise.covoiturage.dto.ReservationResponseDTO;
 import com.croise.covoiturage.service.PassagerService;
 import com.croise.covoiturage.service.ReservationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/passagers")
 @RequiredArgsConstructor
+@Tag(name = "Passagers", description = "Gestion des profils passagers")
+
 public class PassagerController {
 
     private final PassagerService passagerService;

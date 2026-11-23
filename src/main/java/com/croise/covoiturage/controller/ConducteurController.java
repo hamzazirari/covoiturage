@@ -8,12 +8,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/conducteurs")
 @RequiredArgsConstructor
+@Tag(name = "Conducteurs", description = "Gestion des profils conducteurs")
+
 public class ConducteurController {
 
     private final ConducteurService conducteurService;
