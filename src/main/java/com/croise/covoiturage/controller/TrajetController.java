@@ -49,4 +49,16 @@ public class TrajetController {
 
         return ResponseEntity.ok(resultats);
     }
+
+    @PatchMapping("/{id}/terminer")
+    public ResponseEntity<Void> terminer(@PathVariable Long id, @RequestParam Long conducteurId) {
+        trajetService.terminer(id, conducteurId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/annuler")
+    public ResponseEntity<Void> annuler(@PathVariable Long id, @RequestParam Long conducteurId) {
+        trajetService.annulerTrajet(id, conducteurId);
+        return ResponseEntity.noContent().build();
+    }
 }
