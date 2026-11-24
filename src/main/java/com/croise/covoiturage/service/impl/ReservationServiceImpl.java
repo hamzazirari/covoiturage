@@ -198,7 +198,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .toList();
     }
 
-    // Méthode utilitaire : calcule les places déjà réservées (statut CONFIRMEE) sur un trajet
+    //  calcule les places deja reserve (statut CONFIRMEE)
     private int calculerPlacesReservees(Long trajetId) {
         return reservationRepository.findByTrajetId(trajetId)
                 .stream()
